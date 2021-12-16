@@ -7,12 +7,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.aslansari.notes.note.Note
+import com.aslansari.notes.util.NoteInputValidator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -63,6 +72,11 @@ class NoteFragment: Fragment() {
         )
 
         fun addOrEdit() {
+            val imageUrl = etImageUrl.text.toString()
+            if (imageUrl.isNotEmpty() && !NoteInputValidator.validateURL(imageUrl)) {
+                etImageUrl.error = "URL is not valid"
+                return
+            }
             if (isEditing) {
                 currentNote?.let {
                     noteViewModel.editNote(
@@ -84,6 +98,28 @@ class NoteFragment: Fragment() {
                         "")
                 )
             }
+        }
+
+        noteViewModel.viewModelScope.launch {
+            val imageUrlText = MutableStateFlow("")
+
+            etImageUrl.doOnTextChanged { text, _, _, _ ->
+                imageUrlText.value = text.toString()
+            }
+            imageUrlText
+                .debounce(1000)
+                .flowOn(Dispatchers.Main)
+                .collect {
+                    if (it.isNotEmpty()) {
+                        val isValid = NoteInputValidator.validateURL(it)
+                        buttonAddNote.isEnabled = isValid
+                        if (!isValid) {
+                            etImageUrl.error = "URL is not valid"
+                        }
+                    } else {
+                        buttonAddNote.isEnabled = true
+                    }
+                }
         }
 
         etContent.setOnEditorActionListener { _, actionId, _ ->
