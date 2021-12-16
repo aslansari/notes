@@ -9,4 +9,7 @@
     <string name="title">Title</string>
     <string name="note">Note</string>
     <string name="image_url">Image URL</string>
+    <string name="empty_notes_image_desc" translatable="false">Notes are empty</string>
+    <string name="note_card_image_desc" translatable="false">Note Card Image</string>
+    <string name="add_note_fab_desc" translatable="false">Add Note Floating Action Button</string>
 </resources>

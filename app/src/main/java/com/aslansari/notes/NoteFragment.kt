@@ -144,7 +144,7 @@ class NoteFragment: Fragment() {
         return rootView
     }
 
-    fun hideKeyboard() {
+    private fun hideKeyboard() {
         val focusedEditTextView = activity?.window?.currentFocus
 
         val inputMethodManager = (activity?.getSystemService(Context.INPUT_METHOD_SERVICE)) as InputMethodManager

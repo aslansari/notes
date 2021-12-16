@@ -28,7 +28,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        android:contentDescription="@string/empty_notes_image_desc" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/placeSnackbar"
@@ -45,7 +46,7 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="24dp"
             app:srcCompat="@drawable/ic_create"
-            android:contentDescription="addNote" />
+            android:contentDescription="@string/add_note_fab_desc" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
