@@ -10,16 +10,18 @@ import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.aslansari.notes.note.Note
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.aslansari.notes.note.Note
 import java.text.SimpleDateFormat
 import java.util.*
 
 class NoteFragment: Fragment() {
 
-    private val simpleDateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
-    private val noteViewModel: NoteViewModel by activityViewModels()
+    private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    private val noteViewModel: NoteViewModel by activityViewModels(factoryProducer = {
+        NoteViewModelFactory((activity?.application as NoteApp).repository)
+    })
 
     override fun onCreateView(
         inflater: LayoutInflater,

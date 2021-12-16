@@ -1,9 +1,13 @@
 package com.aslansari.notes.note
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.util.*
 
+@Entity(tableName = "notes")
 data class Note(
-    val id: String,
+    @PrimaryKey @ColumnInfo(name = "id") val id: String,
     val title: String,
     val content: String,
     val imageUrl: String,

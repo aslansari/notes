@@ -1,13 +1,13 @@
 package com.aslansari.notes
 
 import com.aslansari.notes.note.Note
+import com.aslansari.notes.note.NoteDAO
+import com.aslansari.notes.note.NoteRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.test.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -15,6 +15,10 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 
 @RunWith(JUnit4::class)
 class NoteViewModelTest {
@@ -23,9 +27,16 @@ class NoteViewModelTest {
     var mainCoroutineRule = MainCoroutineRule()
 
     private lateinit var viewModel: NoteViewModel
+    private lateinit var noteDAO: NoteDAO
     @Before
     fun setup() {
-        viewModel = NoteViewModel(mainCoroutineRule.testDispatcher)
+
+        noteDAO = mock {
+            on { getNotes() } doReturn flow {  }
+        }
+
+        val noteRepository = NoteRepository(noteDAO)
+        viewModel = NoteViewModel(mainCoroutineRule.testDispatcher, noteRepository)
     }
 
     @Test
@@ -34,11 +45,11 @@ class NoteViewModelTest {
         viewModel.addNote(getNote())
         val testResults = mutableListOf<MutableList<Note>>()
         val job = launch {
-            viewModel.noteFlow.toList(testResults)
+            viewModel.noteFlow.toList(testResults.toMutableList())
         }
-
-        assert(2 == testResults.first().size)
-        assert("content" == testResults.first()[0].content)
+        verify(noteDAO) {
+            2 * { insertNote(any())}
+        }
         job.cancel()
     }
 
@@ -49,11 +60,12 @@ class NoteViewModelTest {
         viewModel.editNote(note.copy(title = "newTitle"))
         val testResults = mutableListOf<MutableList<Note>>()
         val job = launch {
-            viewModel.noteFlow.toList(testResults)
+            viewModel.noteFlow.toList(testResults.toMutableList())
         }
-
-        assert(1 == testResults.first().size)
-        assert("newTitle" == testResults.first()[0].title)
+        verify(noteDAO) {
+            1 * { insertNote(any()) }
+            1 * { updateNote(any()) }
+        }
         job.cancel()
     }
 
@@ -64,10 +76,12 @@ class NoteViewModelTest {
         viewModel.deleteNote(note.id)
         val testResults = mutableListOf<MutableList<Note>>()
         val job = launch {
-            viewModel.noteFlow.toList(testResults)
+            viewModel.noteFlow.toList(testResults.toMutableList())
         }
-
-        assert(0 == testResults.first().size)
+        verify(noteDAO) {
+            1 * { insertNote(any()) }
+            1 * { deleteNote(any()) }
+        }
         job.cancel()
     }
 

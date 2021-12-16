@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -18,7 +19,9 @@ import kotlinx.coroutines.flow.collect
 
 class MainFragment: Fragment() {
 
-    val noteViewModel: NoteViewModel by activityViewModels()
+    private val noteViewModel: NoteViewModel by activityViewModels(factoryProducer = {
+        NoteViewModelFactory((activity?.application as NoteApp).repository)
+    })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,9 +47,9 @@ class MainFragment: Fragment() {
                 ivAddNote.visibility = if (it.isEmpty()) {
                     View.VISIBLE
                 } else {
-                    recyclerAdapter.update(it)
                     View.GONE
                 }
+                recyclerAdapter.update(it)
             }
         }
 
