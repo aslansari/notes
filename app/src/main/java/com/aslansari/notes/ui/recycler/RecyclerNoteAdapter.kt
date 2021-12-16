@@ -3,9 +3,12 @@ package com.aslansari.notes.ui.recycler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.aslansari.notes.R
 import com.aslansari.notes.note.Note
 
@@ -28,6 +31,7 @@ class RecyclerNoteAdapter : BaseRecyclerAdapter<Note>() {
     class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private var tvHeadline = itemView.findViewById(R.id.tvHeadline) as TextView
         private var tvContent = itemView.findViewById(R.id.tvContent) as TextView
+        private var ivNoteImage = itemView.findViewById(R.id.ivNoteImage) as ImageView
         private var tvCreatedAt = itemView.findViewById(R.id.tvCreatedAt) as TextView
         private var tvEdited = itemView.findViewById(R.id.tvEdited) as TextView
 
@@ -39,6 +43,15 @@ class RecyclerNoteAdapter : BaseRecyclerAdapter<Note>() {
                 View.GONE
             } else {
                 View.VISIBLE
+            }
+            if (note.imageUrl.isEmpty()) {
+                ivNoteImage.visibility = View.GONE
+            } else {
+                ivNoteImage.visibility = View.VISIBLE
+                ivNoteImage.load(note.imageUrl) {
+                    placeholder(R.drawable.ic_placeholder)
+                    error(R.drawable.ic_broken_image)
+                }
             }
         }
     }
