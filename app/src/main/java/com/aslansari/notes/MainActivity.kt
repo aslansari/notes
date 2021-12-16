@@ -12,14 +12,13 @@ class MainActivity : AppCompatActivity() {
 
         val navController = findNavController(R.id.nav_host_fragment)
         setupActionBarWithNavController(navController)
-        navController.addOnDestinationChangedListener {
-                controller, destination, arguments ->
+        navController.addOnDestinationChangedListener { _, _, _ ->
             actionBar?.title = navController.currentDestination?.label
         }
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        findNavController(R.id.nav_host_fragment).popBackStack()
+        findNavController(R.id.nav_host_fragment).navigateUp()
         return super.onSupportNavigateUp()
     }
 }

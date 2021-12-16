@@ -10,6 +10,10 @@
         android:label="@string/app_name">
         <action
             android:id="@+id/action_nav_home_to_nav_note"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
             app:destination="@id/nav_note_detail" />
     </fragment>
 
@@ -23,6 +27,8 @@
         <action
             android:id="@+id/action_nav_note_to_nav_home"
             app:destination="@id/nav_home"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
             app:popUpTo="@id/nav_home" />
     </fragment>
 
