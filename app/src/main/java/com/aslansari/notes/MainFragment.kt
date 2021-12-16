@@ -6,15 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.aslansari.notes.note.Note
 import com.aslansari.notes.ui.recycler.RecyclerMarginDecorator
 import com.aslansari.notes.ui.recycler.RecyclerNoteAdapter
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.flow.collect
 
 class MainFragment: Fragment() {
+
+    val noteViewModel: NoteViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,8 +39,23 @@ class MainFragment: Fragment() {
         recyclerNotes.addItemDecoration(RecyclerMarginDecorator(verticalMargin, horizontalMargin))
         recyclerNotes.adapter = recyclerAdapter
 
-        // TODO: 12/5/2021 remove fake data
-        recyclerAdapter.addAll(fakeData().toMutableList())
+        lifecycleScope.launchWhenStarted {
+            noteViewModel.noteFlow.collect {
+                ivAddNote.visibility = if (it.isEmpty()) {
+                    View.VISIBLE
+                } else {
+                    recyclerAdapter.update(it)
+                    View.GONE
+                }
+            }
+        }
+
+        recyclerAdapter.OnItemClickListener = {
+            val data = Bundle()
+            data.putString("title", context?.getString(R.string.edit_note))
+            data.putString("id", it.id)
+            findNavController().navigate(R.id.action_nav_home_to_nav_note, data)
+        }
 
         fabMain.setOnClickListener {
             val data = Bundle()
@@ -44,32 +64,4 @@ class MainFragment: Fragment() {
         }
         return rootView
     }
-}
-
-// TODO: 12/5/2021 added for viewing reasons,
-//  remove when note feature implemented
-fun fakeData(): List<Note> {
-    return listOf(
-        Note(
-            title = "Title1",
-            content = "Content",
-            imageUrl = "",
-            createdAt = "",
-            editedAt = ""
-        ),
-        Note(
-            title = "Title2",
-            content = "Content",
-            imageUrl = "",
-            createdAt = "",
-            editedAt = ""
-        ),
-        Note(
-            title = "Title3",
-            content = "Content",
-            imageUrl = "",
-            createdAt = "",
-            editedAt = ""
-        )
-    )
 }

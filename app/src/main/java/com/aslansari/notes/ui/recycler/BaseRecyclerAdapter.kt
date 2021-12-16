@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 abstract class BaseRecyclerAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     protected val items: MutableList<T> = mutableListOf()
-    protected var OnItemClickListener: ((T) -> Unit)? = null
+    var OnItemClickListener: ((T) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return createItemViewHolder(parent = parent)
